@@ -1,10 +1,5 @@
 import numpy as np
-import pandas as pd
-from astropy.table import Table
-import astropy.units as u
-from natsort import natsorted
-import matplotlib, os, pickle, warnings
-warnings.filterwarnings('ignore')
+import matplotlib, pickle
 matplotlib.use("TkAgg")
 import matplotlib.pyplot as plt
 from matplotlib.colors import LinearSegmentedColormap
@@ -12,12 +7,10 @@ from matplotlib.gridspec import GridSpec
 from tensorflow import keras
 import seaborn as sns
 np.set_printoptions(suppress=True)
-from sklearn.preprocessing import StandardScaler, RobustScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score, classification_report, confusion_matrix
 import umap.umap_ as umap  # Make sure umap-learn is installed: pip install umap-learn
-from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler, RobustScaler, LabelEncoder
+from sklearn.preprocessing import RobustScaler, LabelEncoder
 
 from tensorflow.keras import layers, regularizers, callbacks, Model, Input
 import tensorflow as tf
@@ -73,10 +66,6 @@ if test_performance:
 	atmos_map_reversed = {0:"CV", 1:"DA", 2:"DAH", 3:"DB", 4:"DC", 5:"DQ", 6:"DZ", 7:"DO/DAO"}
 
 	def prepare_labels(y_raw):
-		"""
-		Takes an array of original class labels (strings)
-		Returns y_atmos (8 categories) and y_Z (binary or -1)
-		"""
 		y_atmos, y_Z = [], []
 		
 		for lbl in y_raw:
@@ -203,7 +192,7 @@ if test_performance:
 
 	history = model.fit(
 	    X_train,
-	    {"atmosphere": y_atmos, "metals": y_Z},   # <--- two label arrays
+	    {"atmosphere": y_atmos, "metals": y_Z},
 	    sample_weight=sample_weight,
 	    validation_split=0.1, epochs=100, batch_size=64,
 	    callbacks=[es, rlrop, mc], shuffle=True, verbose=1
@@ -211,9 +200,9 @@ if test_performance:
 	
 	
 	
-	# --- Predictions ---
+	# Predictions
 	model = keras.models.load_model("best_model_advanced.h5")
-	preds = model.predict(X_test)#{
+	preds = model.predict(X_test)
 	
 	y_preds_atmos = preds["atmosphere"]
 	y_preds_Z = preds["metals"]
@@ -288,7 +277,6 @@ if plot_cm_other:
 		(X_train, y_train, y_pred, X_test, y_test, probas) = pickle.load(f)
 	
 	
-	#incorrect_idx = np.where(y_pred != y_test)[0]
 	incorrect_idx, correct_idx = np.array([], dtype=bool), np.array([], dtype=bool)
 	
 	for cnt, (i, ii) in enumerate(zip(y_pred, y_test)):
@@ -373,11 +361,7 @@ if plot_cm_other:
 	mask_offdiag = ~mask_diag
 	
 
-	# Create figure with GridSpec for 3 columns (left bar, matrix, right bar)
 	fig = plt.figure(figsize=(12, 8))
-	
-
-	
 	gs = GridSpec(1, 2, width_ratios=[0.95, 0.05], wspace=0.1)
 	ax_bluebar = fig.add_subplot(gs[1]);   ax_matrix = fig.add_subplot(gs[0])
 	
@@ -390,14 +374,11 @@ if plot_cm_other:
 		
 	beige_to_blue = LinearSegmentedColormap.from_list("beige_to_blue", colors)
 		
-		
-	# Overlay blue heatmap (correct)
+	# Overlay blue heatmap
 	sns.heatmap(cm_normalized, annot=annot, fmt="",  cmap=beige_to_blue, cbar=True, ax=ax_matrix,  xticklabels=all_class_names, yticklabels=all_class_names[:-1],
-		    linewidths=0.5, linecolor='gray',  cbar_ax=ax_bluebar,  vmin=0, vmax=1) # , cbar_kws={"label": "Correct (Blue)"}
+		    linewidths=0.5, linecolor='gray',  cbar_ax=ax_bluebar,  vmin=0, vmax=1)
 
-	
 
-	# Axis labels and title
 	ax_matrix.set_xlabel("Predicted Label");       ax_matrix.set_ylabel("True Label")
 	
 	plt.tight_layout()
