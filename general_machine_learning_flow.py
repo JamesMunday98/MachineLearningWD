@@ -397,7 +397,6 @@ CODE TO DO UMAP
 		
 
 if plot_umap:
-    
     # UMAP
 	reducer = umap.UMAP(n_neighbors=15, min_dist=0.1, random_state=42)
 	embedding = reducer.fit_transform(X_combined)
@@ -437,38 +436,6 @@ if plot_umap:
 	ax0.legend(loc="upper right", ncol=2, columnspacing=0.5)
 	ax0.grid(False)
 	
-	plt.savefig("output_other_Kfold/UMAPplot_zoom2.pdf", bbox_inches='tight', dpi=1000)
+	plt.savefig("UMAPplot.pdf", bbox_inches='tight', dpi=1000)
 	#plt.show()
 	plt.close()
-
-
-	try:
-		for i, spt in enumerate(np.unique(speclabel)):
-			if "P<" in spt or spt=="DA": continue
-			mask = speclabel == spt
-			col=colours[i]
-			
-			plt.scatter(all_gaiabp[mask]-all_gaiarp[mask], all_gaiag[mask]- 5*np.log10((1000/all_gaiaplx[mask]) / 10), c=col, label=str(spt))
-		plt.gca().invert_yaxis()
-		plt.legend()
-		plt.xlabel("BP-RP")
-		plt.ylabel("absG")
-		plt.show();  plt.close()
-
-
-		fig, axes = plt.subplots(2,2)
-
-		for i, spt in enumerate(np.unique(speclabel)):
-			if "P<" in spt or spt=="DA": continue
-			mask = speclabel == spt
-			col=colours[i]
-			
-			axes[0,0].scatter(all_PSg[mask]- all_PSr[mask], all_PSz[mask]-all_PSy[mask], c=col, label=str(spt))
-			axes[0,1].scatter(all_PSg[mask]- all_PSr[mask], all_PSi[mask]-all_PSz[mask], c=col, label=str(spt))
-			axes[0,1].scatter(all_PSg[mask]- all_PSz[mask], all_PSr[mask]-all_PSi[mask], c=col, label=str(spt))
-		plt.gca().invert_yaxis()
-		plt.legend()
-		plt.show();  plt.close()
-	except: None
-
-
