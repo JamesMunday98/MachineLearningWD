@@ -5,4 +5,6 @@ Additional files which accompany the study
 Munday et al 2026
 https://ui.adsabs.harvard.edu/abs/2026MNRAS.546ag246M/abstract
 
+FullDESI_Classifications.csv gives the machine learning classifications for each class applied to the full DESI dataset that met our selection criteria
+
 general_machine_learning_flow.py gives an overview of the machine learning architecutre implemented in python from this study, as well as some code for plotting and code to perform a UMAP analysis
